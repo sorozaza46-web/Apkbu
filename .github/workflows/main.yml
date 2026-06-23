@@ -1,0 +1,49 @@
+name: "Meccha Chameleon APK Builder"
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-android:
+    name: "Compile Android Release APK 📱"
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Kodları sunucuya çek
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # 2. Java Ortamını Kur (Android derleme için zorunlu)
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Android SDK Kurulumu
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 4. Godot'nun APK basarken isteyeceği Geçici Debug Keystore Dosyasını Üret
+      - name: Generate Dummy Debug Keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      # 5. Godot Engine Headless ve Android Şablonlarını İndirip Kur (Barichello CI Container)
+      - name: Godot Android Export
+        uses: firebelley/godot-export@v5.2.1
+        with:
+          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz
+          relative_project_path: ./
+          archive_output: false
+          cache: true
+
+      # 6. Üretilen Hazır APK Dosyasını GitHub Artifacts Kısmına İndirilebilir Olarak Yükle
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meccha-Chameleon-Release-Build
+          path: build/MecchaChameleon.apk
+          
