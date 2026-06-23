@@ -10,27 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Kodları sunucuya çek
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # 2. Java Ortamını Kur (Android derleme için zorunlu)
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. Android SDK Kurulumu
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 4. Keystore dosyasını tam olarak proje kök dizinine üret
       - name: Generate Debug Keystore
         run: |
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # 5. Linux için Godot v4.3 Çalıştırıcısını indir ve ayarla
       - name: Download Godot Engine
         run: |
           wget https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
@@ -38,7 +33,6 @@ jobs:
           mv Godot_v4.3-stable_linux.x86_64 godot
           chmod +x godot
 
-      # 6. Android Export şablonlarını indir ve sisteme kur
       - name: Install Godot Export Templates
         run: |
           wget https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz
@@ -47,18 +41,11 @@ jobs:
           mv /tmp/templates/* ~/.local/share/godot/export_templates/4.3.stable/
           rm -rf /tmp/templates Godot_v4.3-stable_export_templates.tpz
 
-      # 7. EDITÖR UYARISI ÇÖZÜMÜ: Godot Editörünü arka planda bir kez açıp kapatarak tüm assetleri import etmesini sağla
-      - name: Godot Editor First-Time Asset Import
-        run: |
-          ./godot --headless --editor --quit --path .
-
-      # 8. İMZALAMA VE DERLEME: APK çıktısını tetikle
       - name: Export Android APK
         run: |
           mkdir -p build
           ./godot --headless --path . --export-release "Android" build/MecchaChameleon.apk
 
-      # 9. Üretilen Hazır APK Dosyasını Yükle
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
