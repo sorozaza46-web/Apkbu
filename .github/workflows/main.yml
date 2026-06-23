@@ -25,22 +25,40 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 4. Godot'nun APK basarken isteyeceği Geçici Debug Keystore Dosyasını Üret
-      - name: Generate Dummy Debug Keystore
+      # 4. Keystore dosyasını tam olarak proje kök dizinine üret
+      - name: Generate Debug Keystore
         run: |
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # 5. Godot Engine Headless ve Android Şablonlarını İndirip Kur (Barichello CI Container)
-      - name: Godot Android Export
-        uses: firebelley/godot-export@v5.2.1
-        with:
-          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
-          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz
-          relative_project_path: ./
-          archive_output: false
-          cache: true
+      # 5. Linux için Godot v4.3 Çalıştırıcısını indir ve ayarla
+      - name: Download Godot Engine
+        run: |
+          wget https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
+          unzip Godot_v4.3-stable_linux.x86_64.zip
+          mv Godot_v4.3-stable_linux.x86_64 godot
+          chmod +x godot
 
-      # 6. Üretilen Hazır APK Dosyasını GitHub Artifacts Kısmına İndirilebilir Olarak Yükle
+      # 6. Android Export şablonlarını indir ve sisteme kur
+      - name: Install Godot Export Templates
+        run: |
+          wget https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.3.stable
+          unzip Godot_v4.3-stable_export_templates.tpz -d /tmp
+          mv /tmp/templates/* ~/.local/share/godot/export_templates/4.3.stable/
+          rm -rf /tmp/templates Godot_v4.3-stable_export_templates.tpz
+
+      # 7. EDITÖR UYARISI ÇÖZÜMÜ: Godot Editörünü arka planda bir kez açıp kapatarak tüm assetleri import etmesini sağla
+      - name: Godot Editor First-Time Asset Import
+        run: |
+          ./godot --headless --editor --quit --path .
+
+      # 8. İMZALAMA VE DERLEME: APK çıktısını tetikle
+      - name: Export Android APK
+        run: |
+          mkdir -p build
+          ./godot --headless --path . --export-release "Android" build/MecchaChameleon.apk
+
+      # 9. Üretilen Hazır APK Dosyasını Yükle
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
