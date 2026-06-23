@@ -3,7 +3,7 @@ config_version=5
 [application]
 config/name="Meccha Chameleon"
 config/features=PackedStringArray("4.3", "Forward Plus")
-run/main_scene="res://main_game.tscn"
+run/main_scene="res://scripts/main.gd"
 
 [display]
 window/size/viewport_width=1280
@@ -14,4 +14,3 @@ window/handheld/orientation=1
 [rendering]
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
-
