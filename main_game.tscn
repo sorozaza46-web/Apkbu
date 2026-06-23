@@ -1,26 +1,26 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/chameleon.gd" id="1_cham"]
 [ext_resource type="Script" path="res://scripts/ui_controller.gd" id="2_uict"]
 
-[sub_type_resource id="Sky_1"]
+[sub_resource type="Sky" id="Sky_1"]
 
-[sub_resource id="Environment_1"]
+[sub_resource type="Environment" id="Environment_1"]
 background_mode = 2
-sky = Sub_type_resource("Sky_1")
+sky = Sub_resource("Sky_1")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource id="BoxShape3D_1"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(20, 1, 20)
 
-[sub_resource id="BoxMesh_1"]
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(20, 1, 20)
 
-[sub_type_resource id="StandardMaterial3D_Floor"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_Floor"]
 albedo_color = Color(0.15, 0.6, 0.2, 1)
 
-[sub_resource id="CapsuleMesh_Cham"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_Cham"]
 radius = 0.4
 height = 1.2
 
@@ -30,7 +30,7 @@ height = 1.2
 environment = Sub_resource("Environment_1")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707, 0.707, 0, -0.707, 0.707, 0, 10, 0)
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 0)
 shadow_enabled = true
 
 [node name="MapFloor" type="StaticBody3D" parent="."]
@@ -40,7 +40,7 @@ shape = Sub_resource("BoxShape3D_1")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MapFloor"]
 mesh = Sub_resource("BoxMesh_1")
-surface_material_override/0 = Sub_type_resource("StandardMaterial3D_Floor")
+surface_material_override/0 = Sub_resource("StandardMaterial3D_Floor")
 
 [node name="ChameleonPlayer" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
@@ -55,7 +55,7 @@ target_position = Vector3(0, -2, 0)
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="ChameleonPlayer"]
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.866, 0.5, 0, -0.5, 0.866, 0, 4, 6)
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 4, 6)
 
 [node name="MobileUI" type="Control" parent="." node_paths=PackedStringArray("chameleon_player")]
 layout_mode = 3
@@ -110,4 +110,3 @@ offset_right = 200.0
 offset_bottom = -124.0
 grow_horizontal = 2
 grow_vertical = 0
-
