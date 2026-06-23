@@ -1,0 +1,113 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/chameleon.gd" id="1_cham"]
+[ext_resource type="Script" path="res://scripts/ui_controller.gd" id="2_uict"]
+
+[sub_type_resource id="Sky_1"]
+
+[sub_resource id="Environment_1"]
+background_mode = 2
+sky = Sub_type_resource("Sky_1")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource id="BoxShape3D_1"]
+size = Vector3(20, 1, 20)
+
+[sub_resource id="BoxMesh_1"]
+size = Vector3(20, 1, 20)
+
+[sub_type_resource id="StandardMaterial3D_Floor"]
+albedo_color = Color(0.15, 0.6, 0.2, 1)
+
+[sub_resource id="CapsuleMesh_Cham"]
+radius = 0.4
+height = 1.2
+
+[node name="MainGame" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = Sub_resource("Environment_1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707, 0.707, 0, -0.707, 0.707, 0, 10, 0)
+shadow_enabled = true
+
+[node name="MapFloor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MapFloor"]
+shape = Sub_resource("BoxShape3D_1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MapFloor"]
+mesh = Sub_resource("BoxMesh_1")
+surface_material_override/0 = Sub_type_resource("StandardMaterial3D_Floor")
+
+[node name="ChameleonPlayer" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+script = ExtResource("1_cham")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChameleonPlayer"]
+mesh = Sub_resource("CapsuleMesh_Cham")
+
+[node name="RayCast3D" type="RayCast3D" parent="ChameleonPlayer"]
+target_position = Vector3(0, -2, 0)
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="ChameleonPlayer"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866, 0.5, 0, -0.5, 0.866, 0, 4, 6)
+
+[node name="MobileUI" type="Control" parent="." node_paths=PackedStringArray("chameleon_player")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_uict")
+chameleon_player = NodePath("../ChameleonPlayer")
+
+[node name="PaintButton" type="Button" parent="MobileUI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -100.0
+offset_right = -20.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "BOYA (PAINT)"
+
+[node name="WhistleButton" type="Button" parent="MobileUI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -100.0
+offset_right = 160.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "ISLIK ÇAL"
+
+[node name="SizeSlider" type="HSlider" parent="MobileUI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -140.0
+offset_right = 200.0
+offset_bottom = -124.0
+grow_horizontal = 2
+grow_vertical = 0
+
